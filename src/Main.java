@@ -126,7 +126,7 @@ public class Main {
                 {
                     uploader="I0";
                 }
-                int ID=cin.nextInt();
+
                 instructor i=new instructor();
                 while(true)
                 {
@@ -161,19 +161,108 @@ public class Main {
                     }
                     if(choice==2)
                     {
-
+                        System.out.println("1.Add Assignment \n 2. Add Quiz");
+                        int c=cin.nextInt();
+                        if(c==1)
+                        {
+                            System.out.println("Enter The problem Statement : ");
+                            String statement=cin.nextLine();
+                            System.out.println("Enter the Max Marks : ");
+                            int marks=cin.nextInt();
+                            m.add_assignment(i,statement,marks);
+                        }
+                        else
+                        {
+                            System.out.println("Enter the Quiz Question : ");
+                            String ques=cin.nextLine();
+                            m.add_quizzes(i,ques);
+                        }
                     }
+                    if(choice==3)
+                    {
+                        m.view_material();
+                    }
+                    if(choice == 4)
+                    {
+                        m.View_assessments();
+                    }
+                    if(choice == 5)
+                    {
+                        // grade assignments
+                    }
+                    if(choice == 6)
+                    {
+                        // close the assessment
+                    }
+                    if(choice ==7)
+                    {
+                        m.view_comments();
+                    }
+                    if(choice ==8)
+                    {
+                        System.out.println("Enter The comments : ");
+                        String s=cin.nextLine();
+                        m.add_comments(s);
+                    }
+                    if(choice == 9)
+                    {
+                        break;
+                    }
+
                 }
-
-
-
 
             }
 
+            if (login == 2)
+            {
+                while(true)
+                {
+                    System.out.println("Students : \n 0-S0 \n 1-S1 \n 2-S2");
+                    int ID=cin.nextInt();
+                    String stu="S2";
+                    if(ID==0)
+                    {
+                        stu="S0";
+                    }
+                    if(ID==1)
+                    {
+                        stu="S1";
+                    }
 
-
-
-            if (login == 2) {
+                    System.out.println("STUDENTS MENU \n 1.view lecture materials \n 2.view assessments \n 3.submit assessmenst" +
+                            "\n 4. view grades \n 5. View comments \n 6.Add Comments \n 7. Logout");
+                    int choice=cin.nextInt();
+                    if(choice==1)
+                    {
+                        m.view_material();
+                    }
+                    if(choice == 2)
+                    {
+                        m.View_assessments();
+                    }
+                    if(choice == 3)
+                    {
+                        // submit assessments
+                    }
+                    if(choice == 4)
+                    {
+                        // view grades
+                    }
+                    if(choice == 5)
+                    {
+                        m.view_comments();
+                    }
+                    if(choice==6)
+                    {
+                        System.out.println("Enter The comments : ");
+                        String s=cin.nextLine();
+                        m.add_comments(s);
+                    }
+                    if(choice == 7)
+                    {
+                        break;
+                    }
+                }
 
             }
             if (login == 3) {
@@ -209,25 +298,22 @@ public class Main {
         i.set_quizzes(statement);
         inst.add(i);
     }
-    void view_student_material(student s)
+    void view_material()
     {
-
-        for(int i=0;i<inst.get(0).mater.size();i++)
-        {
+        for (int i = 0; i < inst.get(0).mater.size(); i++) {
             System.out.println(inst.get(0).mater.get(i));
         }
-
-        for(int i=0;i<inst.get(0).assignment.size();i++)
-        {
+    }
+    void View_assessments() {
+        for (int i = 0; i < inst.get(0).assignment.size(); i++) {
             System.out.println(inst.get(0).assignment.get(i));
         }
 
-        for(int i=0;i<inst.get(0).quiz.size();i++)
-        {
+        for (int i = 0; i < inst.get(0).quiz.size(); i++) {
             System.out.println(inst.get(0).quiz.get(i));
         }
-
     }
+
     void add_comments(String s)
     {
         comm=new COMMENTS(s);
