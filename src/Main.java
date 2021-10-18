@@ -1,4 +1,3 @@
-import javax.swing.text.StyleContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -25,6 +24,7 @@ interface Viewing
 
 class instructor implements Viewing,comm
 {
+
     private ArrayList<slides> lecture_slides;
     private ArrayList<video>lecture_videos;
     private ArrayList<Assignment> assignments;
@@ -86,19 +86,21 @@ class instructor implements Viewing,comm
         }
 
     }
+
+
+
+
 }
-
-
 
 
 class slides
 {
 
-
     private String topic;
     private ArrayList<String> content;
     private Date date;
-     private String uploader;
+    private String uploader;
+
     slides(String topic,ArrayList<String> content,String upload)
     {
         this.topic=topic;
@@ -125,6 +127,7 @@ class slides
 }
 class video
 {
+
     private String topic;
     private String content;
     private String uploader;
@@ -162,6 +165,11 @@ class Assignment
     private int marks;
     private String status;
     private int graded;
+    private String student_name;
+
+
+
+
     public Assignment(String statement, int marks,String status) {
         this.marks=marks;
         this.problem_statement=statement;
@@ -178,7 +186,8 @@ class Assignment
         return graded;
     }
 
-    public int getMarks() {
+    public int getMarks()
+    {
         return marks;
     }
 
@@ -190,18 +199,38 @@ class Assignment
         return status;
     }
 
+    public String getStudent_name() {
+        return student_name;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStudent_name(String student_name) {
+        this.student_name = student_name;
+    }
+
+    public void setMarks(int marks) {
+        this.marks = marks;
+    }
 }
+
+
 class Quiz
 {
+
     private String name;
     private String question;
     private int marks;
     private String status;
     private int graded;
+    private String student_name;
+
     Quiz(String ques,int marks,String status)
     {
         this.question=ques;
@@ -219,6 +248,10 @@ class Quiz
         return name;
     }
 
+    public String getStudent_name() {
+        return student_name;
+    }
+
     public int getMarks() {
         return marks;
     }
@@ -234,10 +267,25 @@ class Quiz
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMarks(int marks) {
+        this.marks = marks;
+    }
+
+    public void setStudent_name(String student_name) {
+        this.student_name = student_name;
+    }
 }
+
+
 
 class student implements Viewing,comm
 {
+
     ArrayList<Assignment> assignment_student=new ArrayList<>();
 
     ArrayList<Quiz> student_quiz=new ArrayList<>();
@@ -257,6 +305,7 @@ class student implements Viewing,comm
     {
         return student_quiz;
     }
+
 
     public void print_grades()
     {
@@ -288,6 +337,8 @@ class student implements Viewing,comm
 
     ArrayList<slides> lecture_slides;ArrayList<video>lecture_videos;
     ArrayList<Assignment> assignments;ArrayList<Quiz> quiz;
+
+
     void get_array_lists(ArrayList<slides> lecture_slides,ArrayList<video>lecture_videos)
     {
         this.lecture_slides=lecture_slides;
@@ -303,7 +354,6 @@ class student implements Viewing,comm
     @Override
     public void view_comments()
     {
-
 
     }
     @Override
@@ -467,7 +517,7 @@ public class Main {
                     }
                     if(choice == 5)
                     {
-                        // grade assignments
+                       m.get_grades(s0,s1,s2);
                     }
                     if(choice == 6)
                     {
@@ -533,7 +583,7 @@ public class Main {
                         if(name.charAt(name.length()-1)=='p' && name.charAt(name.length()-2)=='i'
                         && name.charAt(name.length()-3)=='z' && name.charAt(name.length()-4)=='.')
                         {
-                            //m.grade_assessments(a,name);
+                            m.submit_assignment(s,a,-1,stu);
                         }
                         else
                         {
@@ -570,6 +620,7 @@ public class Main {
 
     void add_slides(String topic,int slides,String uploader)
     {
+
         ArrayList<String> materials=new ArrayList<String>();
         for(int j=1;j<=slides;j++) {
             System.out.println("Content in slide " + j);
@@ -578,6 +629,8 @@ public class Main {
         }
             slides s=new slides(topic,materials,uploader);
         lecture_slides.add(s);
+
+
 
     }
     void add_video(instructor i,String topic,String content,String uploader)
@@ -634,6 +687,9 @@ public class Main {
             System.out.println(comments.get(i));
         }
     }
+
+
+
     void pending_assessments(student s)
     {
         ArrayList<Assignment> pending=s.getAssignment_student();
@@ -656,7 +712,7 @@ public class Main {
 
 
     }
-    void submit_assignment(student s,int code_ass,int code_quiz)
+    void submit_assignment(student s,int code_ass,int code_quiz,String name)
     {
         ArrayList<Assignment> pending=s.getAssignment_student();
         for(int i=0;i< pending.size();i++)
@@ -664,6 +720,7 @@ public class Main {
             if(i==code_ass)
             {
                 pending.get(i).setStatus("True");
+                pending.get(i).setName(name);
             }
         }
         s.setAssignment_student(pending);
@@ -675,6 +732,7 @@ public class Main {
             if(i==code_quiz)
             {
                 q_pending.get(i).setStatus("True");
+                q_pending.get(i).setName(name);
             }
         }
         s.setStudent_quiz(q_pending);
@@ -684,11 +742,46 @@ public class Main {
     {
         s.print_grades();
     }
-    void get_grades()
+
+    void get_grades(student s0,student s1,student s2)
     {
         instructor i=new instructor();
         i.view_assessments();
-        System.out.println("Enter the ID of assignment to check the submission");
+        System.out.println("Enter the ID of assignment to check the submission otherwise -1 ");
+        int AID=cin.nextInt();
+        System.out.println("Enter the ID of quiz to check the submission otherwise -1 ");
+        int QID=cin.nextInt();
+
+        if(AID==-1 && QID!=-1)
+        {
+            ArrayList<Quiz> q_pending=s0.getQuiz_student();
+            if(q_pending.get(QID).getGraded()!=-1)
+                System.out.println("0"+"->"+q_pending.get(QID).getStudent_name());
+
+            ArrayList<Quiz> r_pending=s1.getQuiz_student();
+            if(r_pending.get(QID).getGraded()!=-1)
+                System.out.println("1"+"->"+r_pending.get(QID).getStudent_name());
+
+            ArrayList<Quiz> s_pending=s2.getQuiz_student();
+            if(s_pending.get(QID).getGraded()!=-1)
+                System.out.println("2"+"->"+s_pending.get(QID).getStudent_name());
+
+        }
+        System.out.println("Choose ID from these Ungraded submissions");
+        int ID=cin.nextInt();
+        student s=s2;
+        if(ID==0)s=s0;
+        if(ID==1)s=s1;
+        System.out.println(s.assignment_student.get(0).getName());
+        System.out.println(s.assignment_student.get(0).getMarks());
+        System.out.println("Enter the marks");
+        int mark=cin.nextInt();
+        s.assignment_student.get(0).setMarks(mark);
+
+
+
     }
+
+
 
 }
