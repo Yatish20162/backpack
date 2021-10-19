@@ -1,19 +1,23 @@
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 interface comm
 {
      void view_comments();
 }
+
+
 class COMMENTS
 {
     String s;
+    Date date;
     COMMENTS(String comm)
     {
         this.s=comm;
+        this.date=java.util.Calendar.getInstance().getTime();
     }
 }
+
+
 
 
 interface Viewing
@@ -32,26 +36,23 @@ class instructor
 {
     Scanner cin=new Scanner(System.in);
     String name;
+
     instructor(String name)
     {
         this.name=name;
     }
-    void upolad_lm(ArrayList<materials> material)
-    {
 
-    }
-    void upload_assignment(ArrayList<assessment> assessment)
-    {
 
-    }
     void close_assessments(ArrayList<assessment> assessment)
     {
+
         for (int i = 0; i < assessment.size(); i++) {
             System.out.println(i + " -> ");
             assessment.get(i).print_assessments();
         }
         System.out.println("choose the assessment to close : ");
         int code = cin.nextInt();
+
 
         for (int i = 0; i < assessment.size(); i++)
         {
@@ -60,7 +61,9 @@ class instructor
                 assessment.get(i).setStatus("Close");
             }
         }
+
     }
+
     void view_lm(ArrayList<materials> material)
     {
         for(int i=0;i<material.size();i++)
@@ -101,14 +104,6 @@ class instructor
 
 
 
-
-    }
-    void view_comments(ArrayList<COMMENTS> commments)
-    {
-
-    }
-    void add_comments(ArrayList<COMMENTS> commments)
-    {
 
     }
 
@@ -264,6 +259,10 @@ class submission
         return s;
     }
 
+    public boolean isIs_graded() {
+        return is_graded;
+    }
+
     public String getFile_name() {
         return file_name;
     }
@@ -305,6 +304,7 @@ interface assessment
     public String getStatus();
     public boolean Is_submitted();
     public void setIs_submitted( boolean is_submitted);
+    public String getQues();
 }
 
 class Assignment implements assessment
@@ -475,13 +475,18 @@ class Quiz implements  assessment
 
 class student
 {
-    ArrayList<assessment> ass = new ArrayList<>();
+    private HashMap<assessment, submission> hmap;
     Scanner cin=new Scanner(System.in);
       String student_name;
       student(String name)
       {
           this.student_name=name;
+          hmap = new HashMap<>();
       }
+
+    public HashMap<assessment, submission> getHmap() {
+        return hmap;
+    }
 
     void view_lm(ArrayList<materials> material)
     {
@@ -489,7 +494,6 @@ class student
         {
             material.get(i).view();
         }
-
     }
     void view_assessments(ArrayList<assessment> assessment)
     {
@@ -500,62 +504,59 @@ class student
 
     }
 
-    void submit_assessments()
+    void submit_assessments(assessment ass, student stu)
     {
-        System.out.println("Enter The ID to submit : ");
-        int code=cin.nextInt();
-        cin.nextLine();
-        System.out.println("Enter the file name of assignment");
-        String name=cin.nextLine();
-        if(name.charAt(name.length()-1)=='p' && name.charAt(name.length()-2)=='i'
-                && name.charAt(name.length()-3)=='z' && name.charAt(name.length()-4)=='.')
+        if(ass instanceof Assignment)
         {
-            for(int i=0;i<ass.size();i++)
-            {
-                if(i==code)
-                {
-                    ass.get(i).submissions.setFile_name(name);
-                    ass.get(i).setIs_submitted(true);
-                }
+            System.out.println("Enter the file name of assignment");
+            String name = cin.nextLine();
+            if (name.charAt(name.length() - 1) == 'p' && name.charAt(name.length() - 2) == 'i'
+                    && name.charAt(name.length() - 3) == 'z' && name.charAt(name.length() - 4) == '.') {
+                submission sub = new submission();
+                sub.setFile_name(name);
+                hmap.put(ass, sub);
+            } else {
+                System.out.println("ERROR!!!!!! Wrong File name submitted");
             }
-
         }
         else
         {
-            System.out.println("ERROR!!!!!! Wrong File name submitted");
+            System.out.println("Enter the ans of quiz :");
+            String ans = cin.nextLine();
+            submission sub = new submission();
+            sub.setFile_name(ans);
+            hmap.put(ass, sub);
         }
-
-
     }
 
     void view_grades()
     {
-        for(int i=0;i<ass.size();i++)
-        {
-                ass.get(i).submissions.view_grades();
-        }
+        LinkedList<assessment> graded = new LinkedList<>();
+        LinkedList<assessment> ungraded = new LinkedList<>();
 
+        for(Map.Entry<assessment, submission> m : hmap.entrySet())
+        {
+            submission sub = m.getValue();
+            if(sub.isIs_graded())
+                graded.add(m.getKey());
+            else
+                ungraded.add(m.getKey());
+        }
+        System.out.println("Graded");
+        for(int i=0;i< graded.size();i++)
+        {
+            System.out.println(graded.get(i).getQues());
+        }
+        System.out.println("Ungraded");
+        for(int i=0;i< ungraded.size();i++)
+        {
+            System.out.println(ungraded.get(i).getQues());
+        }
     }
 
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 public class Main {
 
@@ -687,22 +688,27 @@ public class Main {
                     if(choice==3)
                     {
                         m.view_material(instructors.get(ID));
+                        System.out.println("Welcome "+instructors.get(ID).name);
                     }
                     if(choice == 4)
                     {
                         m.View_assessments(instructors.get(ID));
+                        System.out.println("Welcome "+instructors.get(ID).name);
                     }
                     if(choice == 5)
                     {
                        m.get_grades(instructors.get(ID));
+                        System.out.println("Welcome "+instructors.get(ID).name);
                     }
                     if(choice == 6)
                     {
                         m.close_assessment(instructors.get(ID));
+
                     }
                     if(choice ==7)
                     {
                         m.view_comments();
+
                     }
                     if(choice ==8)
                     {
@@ -710,6 +716,7 @@ public class Main {
                         System.out.println("Enter The comments : ");
                         String s=cin.nextLine();
                         m.add_comments(s);
+                        System.out.println("Welcome "+instructors.get(ID).name);
                     }
                     if(choice == 9)
                     {
@@ -734,19 +741,23 @@ public class Main {
                     if(choice==1)
                     {
                         m.student_view_material(students.get(ID));
+                        System.out.println("Welcome "+students.get(ID).student_name);
                     }
                     if(choice == 2)
                     {
                         m.student_View_assessments(students.get(ID));
+                        System.out.println("Welcome "+students.get(ID).student_name);
                     }
                     if(choice == 3)
                     {
                         m.submit_assignment(students.get(ID));
+                        System.out.println("Welcome "+students.get(ID).student_name);
 
                     }
                     if(choice == 4)
                     {
                         m.view_grades(students.get(ID));
+                        System.out.println("Welcome "+students.get(ID).student_name);
                     }
                     if(choice == 5)
                     {
@@ -757,6 +768,7 @@ public class Main {
                         System.out.println("Enter The comments : ");
                         String str=cin.nextLine();
                         m.add_comments(str);
+                        System.out.println("Welcome "+students.get(ID).student_name);
                     }
                     if(choice == 7)
                     {
@@ -873,13 +885,18 @@ public class Main {
     {
         for(int i=0;i<assessments.size();i++)
         {
-            if(assessments.get(i).getStatus().equals("Open") && assessments.get(i).Is_submitted()==false)
+            if(assessments.get(i).getStatus().equals("Open") && !s.getHmap().containsKey(assessments.get(i)))
             {
                 System.out.println(i+" ");
                 assessments.get(i).print_assessments();
             }
         }
-        s.submit_assessments();
+        System.out.println("Enter The ID to submit : ");
+        int code=cin.nextInt();
+        cin.nextLine();
+        assessment ass = assessments.get(code);
+        s.submit_assessments(ass,s);
+
     }
 
     void view_grades(student s)
@@ -905,7 +922,8 @@ public class Main {
     {
         for(int i=0;i< comments.size();i++)
         {
-            System.out.println(comments.get(i));
+            System.out.println(comments.get(i).s);
+            System.out.println(comments.get(i).date);
         }
     }
 
