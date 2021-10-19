@@ -22,86 +22,126 @@ interface Viewing
      void view_assessments();
 }
 
-class instructor implements Viewing,comm
+
+
+
+
+
+
+class instructor
 {
-
-    private ArrayList<slides> lecture_slides;
-    private ArrayList<video>lecture_videos;
-    private ArrayList<Assignment> assignments;
-    private ArrayList<Quiz> quiz;
-
-
-    void get_array_lists(ArrayList<slides> lecture_slides,ArrayList<video>lecture_videos)
+    Scanner cin=new Scanner(System.in);
+    String name;
+    instructor(String name)
     {
-        this.lecture_slides=lecture_slides;
-        this.lecture_videos=lecture_videos;
+        this.name=name;
     }
-
-    void get_assessment_lists( ArrayList<Assignment> assignments,ArrayList<Quiz> quiz)
+    void upolad_lm(ArrayList<materials> material)
     {
-        this.assignments=assignments;
-        this.quiz=quiz;
+
     }
+    void upload_assignment(ArrayList<assessment> assessment)
+    {
 
-    public void view_materials() {
-
-        for (int i = 0; i < lecture_slides.size(); i++) {
-            System.out.println(lecture_slides.get(i).getTopic());
-            System.out.println(lecture_slides.get(i).getContent());
-            System.out.println(lecture_slides.get(i).getDate());
+    }
+    void close_assessments(ArrayList<assessment> assessment)
+    {
+        for (int i = 0; i < assessment.size(); i++) {
+            System.out.println(i + " -> ");
+            assessment.get(i).print_assessments();
         }
+        System.out.println("choose the assessment to close : ");
+        int code = cin.nextInt();
 
-        for (int i = 0; i < lecture_videos.size(); i++) {
-            System.out.println(lecture_videos.get(i).getContent());
-            System.out.println(lecture_videos.get(i).getTopic());
-            System.out.println(lecture_videos.get(i).getDate());
-        }
-    }
-
-
-
-    public void grade_assessments()
-    {
-
-    }
-
-
-
-
-    @Override
-    public void view_comments() {
-
-    }
-
-    @Override
-    public void view_assessments() {
-        for(int i=0;i<assignments.size();i++)
+        for (int i = 0; i < assessment.size(); i++)
         {
-            System.out.println(assignments.get(i).getProblem_statement());
-            System.out.println(assignments.get(i).getMarks());
+            if (i == code)
+            {
+                assessment.get(i).setStatus("Close");
+            }
         }
-        for(int i=0;i< quiz.size();i++)
+    }
+    void view_lm(ArrayList<materials> material)
+    {
+        for(int i=0;i<material.size();i++)
         {
-            System.out.println(quiz.get(i).getQuestion());
+            material.get(i).view();
+        }
+    }
+    void view_assessments(ArrayList<assessment> assessment)
+    {
+        for(int i=0;i<assessment.size();i++)
+        {
+            assessment.get(i).print_assessments();
         }
 
     }
+    void grade_assessments(ArrayList<assessment> assessment)
+    {
+        for(int i=0;i<assessment.size();i++)
+        {
+            System.out.println(i+" -> ");
+            assessment.get(i).print_assessments();
+        }
+        System.out.println("choose the assessment : ");
+        int code=cin.nextInt();
+
+        for(int i=0;i<assessment.size();i++)
+        {
+            if(i==code)
+            {
+                System.out.println("Maximum marks is : "+ assessment.get(i).getMax_marks());
+                System.out.println("Enter The marks");
+                int marks=cin.nextInt();
+
+                assessment.get(i).submissions.is_graded=true;
+                assessment.get(i).submissions.grade(marks,name);
+            }
+        }
 
 
+
+
+    }
+    void view_comments(ArrayList<COMMENTS> commments)
+    {
+
+    }
+    void add_comments(ArrayList<COMMENTS> commments)
+    {
+
+    }
 
 
 }
 
 
-class slides
+
+
+
+
+
+
+
+
+interface materials
 {
+    public void view();
+}
+
+
+class slides implements materials
+{
+
 
     private String topic;
     private ArrayList<String> content;
     private Date date;
-    private String uploader;
+    private instructor uploader;
 
-    slides(String topic,ArrayList<String> content,String upload)
+
+
+    slides(String topic,ArrayList<String> content,instructor upload)
     {
         this.topic=topic;
         this.content=content;
@@ -109,6 +149,11 @@ class slides
         this.date=java.util.Calendar.getInstance().getTime();
     }
 
+
+    int get_slides()
+    {
+        return content.size();
+    }
     public ArrayList<String> getContent() {
         return content;
     }
@@ -121,18 +166,37 @@ class slides
         return topic;
     }
 
-    public String getUploader() {
+    public instructor getUploader() {
         return uploader;
     }
+
+    @Override
+    public void view()
+    {
+        System.out.println(this.topic);
+        System.out.println(this.content);
+        System.out.println(this.date);
+        System.out.println(this.uploader.name);
+
+    }
 }
-class video
+
+
+
+
+
+
+
+class video implements materials
 {
 
     private String topic;
     private String content;
-    private String uploader;
+    private instructor uploader;
     private Date date;
-    video(String topic,String content,String uploader)
+
+
+    video(String topic,String content,instructor uploader)
     {
         this.topic=topic;
         this.uploader=uploader;
@@ -140,7 +204,7 @@ class video
         this.date=java.util.Calendar.getInstance().getTime();
     }
 
-    public String getUploader() {
+    public instructor getUploader() {
         return uploader;
     }
 
@@ -156,256 +220,387 @@ class video
         return content;
     }
 
-}
-class Assignment
-{
+    @Override
+    public void view() {
+        System.out.println(this.topic);
+        System.out.println(this.content);
+        System.out.println(this.date);
+        System.out.println(this.uploader.name);
 
-    private String name;
-    private String problem_statement;
-    private int marks;
-    private String status;
-    private int graded;
-    private String student_name;
-
-
-
-
-    public Assignment(String statement, int marks,String status) {
-        this.marks=marks;
-        this.problem_statement=statement;
-        this.status=status;
-        this.graded=-1;
-        this.name="";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getGraded() {
-        return graded;
-    }
-
-    public int getMarks()
-    {
-        return marks;
-    }
-
-    public String getProblem_statement() {
-        return problem_statement;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getStudent_name() {
-        return student_name;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStudent_name(String student_name) {
-        this.student_name = student_name;
-    }
-
-    public void setMarks(int marks) {
-        this.marks = marks;
     }
 }
 
 
-class Quiz
+
+
+
+
+
+
+
+class submission
 {
+    private student s;
+    assessment assess;
+    String I;
+    int marks;
+    String file_name;
+    boolean is_graded=false;
 
-    private String name;
-    private String question;
-    private int marks;
-    private String status;
-    private int graded;
-    private String student_name;
-
-    Quiz(String ques,int marks,String status)
-    {
-        this.question=ques;
-        this.status=status;
-        this.marks=marks;
-        this.graded=-1;
-        this.name="";
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getStudent_name() {
-        return student_name;
-    }
 
     public int getMarks() {
         return marks;
     }
 
-    public int getGraded() {
-        return graded;
+    public assessment getAssess() {
+        return assess;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getI() {
+        return I;
+    }
+
+    public student getS() {
+        return s;
+    }
+
+    public String getFile_name() {
+        return file_name;
+    }
+
+    public void setFile_name(String file_name) {
+        this.file_name = file_name;
+    }
+
+    void grade(int marks,String I)
+    {
+       this.marks=marks;
+       this.I=I;
+    }
+
+    void view_grades()
+    {
+        System.out.println("graded");
+        if(this.is_graded) {
+            System.out.println("Submission is :" + this.file_name);
+        }
+        System.out.println("Ungraded");
+        System.out.println("Submission is : "+ this.file_name);
+    }
+}
+
+
+
+
+
+interface assessment
+{
+    void print_assessments();
+
+    submission submissions=new submission();
+
+
+    public int getMax_marks();
+    public void setStatus(String status);
+    public String getStatus();
+    public boolean Is_submitted();
+    public void setIs_submitted( boolean is_submitted);
+}
+
+class Assignment implements assessment
+{
+
+    private String Ques;
+
+    private int max_marks;
+
+    private String  status; // open or close
+
+    private instructor I;
+
+    boolean is_submitted=false;
+
+
+
+    public Assignment(String statement, int marks,String status,instructor I) {
+        this.max_marks=marks;
+        this.Ques=statement;
+        this.status="Open";
+        this.I=I;
+
+    }
+    public boolean Is_submitted() {
+        return is_submitted;
+    }
+
+    public instructor getI() {
+        return I;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setIs_submitted(boolean is_submitted) {
+        this.is_submitted = is_submitted;
+    }
+
+    public int getMax_marks() {
+        return max_marks;
+    }
+
+    public String getQues() {
+        return Ques;
+    }
+
+    public void setI(instructor i) {
+        I = i;
     }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setMax_marks(int max_marks) {
+        this.max_marks = max_marks;
     }
 
-    public void setMarks(int marks) {
-        this.marks = marks;
+    public void setQues(String ques) {
+        Ques = ques;
     }
 
-    public void setStudent_name(String student_name) {
-        this.student_name = student_name;
+    @Override
+    public void print_assessments() {
+        System.out.println("Question : " + getQues());
+        System.out.println("Marks are : " + getMax_marks());
+        System.out.println("Status : "+ getStatus());
+        System.out.println("Uploaded by " + getI().name);
     }
 }
 
 
 
-class student implements Viewing,comm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Quiz implements  assessment
 {
 
-    ArrayList<Assignment> assignment_student=new ArrayList<>();
 
-    ArrayList<Quiz> student_quiz=new ArrayList<>();
+    private String Ques;
 
-    public void setAssignment_student(ArrayList<Assignment> assignment_student) {
-        this.assignment_student = assignment_student;
-    }
-    public ArrayList<Assignment> getAssignment_student() {
-        return assignment_student;
-    }
+    private int max_marks;
 
-    public void setStudent_quiz(ArrayList<Quiz> student_quiz) {
-        this.student_quiz = student_quiz;
-    }
+    private String status; // open or close
 
-    public ArrayList<Quiz> getQuiz_student()
+    private instructor I;
+    boolean is_submitted=false;
+
+
+    Quiz(String ques,instructor I)
     {
-        return student_quiz;
+        this.Ques=ques;
+        this.status="Open";
+        this.I=I;
+        this.max_marks=1;
     }
 
-
-    public void print_grades()
-    {
-        System.out.println("Graded Assignments");
-        for(int i=0;i<assignments.size();i++)
-        {
-            if(assignments.get(i).getGraded()!=-1)
-            System.out.println(assignments.get(i).getName());
-        }
-        for(int i=0;i< quiz.size();i++)
-        {
-            if(quiz.get(i).getGraded()!=-1)
-            System.out.println(quiz.get(i).getName());
-        }
-
-        System.out.println("Ungraded Assignments");
-        for(int i=0;i<assignments.size();i++)
-        {
-            if(assignments.get(i).getGraded()==-1)
-                System.out.println(assignments.get(i).getName());
-        }
-        for(int i=0;i< quiz.size();i++)
-        {
-            if(quiz.get(i).getGraded()==-1)
-                System.out.println(quiz.get(i).getName());
-        }
-
+    public boolean Is_submitted() {
+        return is_submitted;
     }
 
-    ArrayList<slides> lecture_slides;ArrayList<video>lecture_videos;
-    ArrayList<Assignment> assignments;ArrayList<Quiz> quiz;
-
-
-    void get_array_lists(ArrayList<slides> lecture_slides,ArrayList<video>lecture_videos)
-    {
-        this.lecture_slides=lecture_slides;
-        this.lecture_videos=lecture_videos;
+    public void setIs_submitted(boolean is_submitted) {
+        this.is_submitted = is_submitted;
     }
 
-    void get_assessment_lists( ArrayList<Assignment> assignments,ArrayList<Quiz> quiz)
-    {
-        this.assignments=assignments;
-        this.quiz=quiz;
+    public instructor getI() {
+        return I;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getMax_marks() {
+        return max_marks;
+    }
+
+    public String getQues() {
+        return Ques;
+    }
+
+    public void setI(instructor i) {
+        I = i;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setMax_marks(int max_marks) {
+        this.max_marks = max_marks;
+    }
+
+    public void setQues(String ques) {
+        Ques = ques;
     }
 
     @Override
-    public void view_comments()
-    {
-
-    }
-    @Override
-    public void view_materials() {
-
-        for (int i = 0; i < lecture_slides.size(); i++) {
-            System.out.println(lecture_slides.get(i).getTopic());
-            System.out.println(lecture_slides.get(i).getContent());
-            System.out.println(lecture_slides.get(i).getDate());
-        }
-        System.out.println(lecture_slides.get(0).getUploader());
-
-
-
-        for (int i = 0; i < lecture_videos.size(); i++) {
-            System.out.println(lecture_videos.get(i).getContent());
-            System.out.println(lecture_videos.get(i).getTopic());
-            System.out.println(lecture_videos.get(i).getTopic());
-        }
-        System.out.println(lecture_videos.get(0).getUploader());
-
-    }
-
-    @Override
-    public void view_assessments()
-    {
-        for(int i=0;i<assignments.size();i++)
-        {
-            System.out.println("ID : "+i+" "+assignments.get(i).getProblem_statement());
-            System.out.println("Max Marks : "+assignments.get(i).getMarks());
-        }
-
-        for(int i=0;i< quiz.size();i++)
-        {
-            System.out.println("Quiz "+i+" "+"Quiz question: "+quiz.get(i).getQuestion());
-        }
-
+    public void print_assessments() {
+        System.out.println("Question : " + getQues());
+        System.out.println("Marks are : " + getMax_marks());
+        System.out.println("Status : "+ getStatus());
+        System.out.println("Uploaded by " + getI().name);
     }
 }
+
+
+
+
+
+
+
+
+
+
+class student
+{
+    Scanner cin=new Scanner(System.in);
+      String student_name;
+      student(String name)
+      {
+          this.student_name=name;
+      }
+
+    void view_lm(ArrayList<materials> material)
+    {
+        for(int i=0;i<material.size();i++)
+        {
+            material.get(i).view();
+        }
+
+    }
+    void view_assessments(ArrayList<assessment> assessment)
+    {
+        for(int i=0;i<assessment.size();i++)
+        {
+            assessment.get(i).print_assessments();
+        }
+
+    }
+    void view_comments(ArrayList<COMMENTS> commments)
+    {
+
+    }
+    void add_comments(ArrayList<COMMENTS> commments)
+    {
+
+    }
+
+    void submit_assessments(ArrayList<assessment> assessment)
+    {
+
+        for(int i=0;i<assessment.size();i++)
+        {
+            if(assessment.get(i).getStatus().equals("Open") && assessment.get(i).Is_submitted()==false)
+            {
+                System.out.println(i+" ");
+                assessment.get(i).print_assessments();
+            }
+        }
+
+        System.out.println("Enter The ID to submit : ");
+        int code=cin.nextInt();
+        cin.nextLine();
+        System.out.println("Enter the file name of assignment");
+        String name=cin.nextLine();
+        if(name.charAt(name.length()-1)=='p' && name.charAt(name.length()-2)=='i'
+                && name.charAt(name.length()-3)=='z' && name.charAt(name.length()-4)=='.')
+        {
+            for(int i=0;i<assessment.size();i++)
+            {
+                if(i==code)
+                {
+                    assessment.get(i).submissions.setFile_name(name);
+                    assessment.get(i).setIs_submitted(true);
+                }
+            }
+
+        }
+        else
+        {
+            System.out.println("ERROR!!!!!! Wrong File name submitted");
+        }
+
+
+    }
+
+    void view_grades(ArrayList<assessment> assessment)
+    {
+        for(int i=0;i<assessment.size();i++)
+        {
+                assessment.get(i).submissions.view_grades();
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public class Main {
 
-    ArrayList<slides> lecture_slides=new ArrayList<>();
-    ArrayList<video> lecture_videos=new ArrayList<>();
-    ArrayList<Assignment> assignment=new ArrayList<>();
-    ArrayList<Quiz> quiz=new ArrayList<>();
+
+
+
+    static ArrayList<materials> material=new ArrayList<>();
+
+    static ArrayList<instructor> instructors=new ArrayList<>();
+
+    static  ArrayList<student> students=new ArrayList<>();
+
+    static ArrayList<assessment> assessments=new ArrayList<>();
+
+
+
+
 
 
     COMMENTS comm;
     ArrayList<COMMENTS> comments=new ArrayList<>();
 
+
+
+
     Scanner cin=new Scanner(System.in);
+
+
 
     public static void main(String[] args)
     {
@@ -416,11 +611,16 @@ public class Main {
             System.out.println("Welcome to Backpack \n 1.Enter as Instructor \n 2.enter as Student \n 3.Exit");
             int login = cin.nextInt();
 
-            instructor I0=new instructor();
-            instructor I1=new instructor();
-            student s0=new student();
-            student s1=new student();
-            student s2=new student();
+            instructor I0=new instructor("I0");
+            instructor I1=new instructor("I1");
+            student s0=new student("s0");
+            student s1=new student("s1");
+            student s2=new student("s2");
+
+
+            instructors.add(I0);
+            instructors.add(I1);
+            students.add(s0);students.add(s1);students.add(s2);
 
 
             if (login == 1)
@@ -428,6 +628,7 @@ public class Main {
                 System.out.println("Instructors: \n 0-I0 \n 1-I1");
                 System.out.println("choose ID : ");
                 int ID=cin.nextInt();
+
                 String uploader="I1";
                 if(ID==0)
                 {
@@ -454,28 +655,24 @@ public class Main {
                             String topic=cin.nextLine();
                             System.out.println("Enter The no. of Slides");
                             int num= cin.nextInt();
-                            if(ID==0)
-                                m.add_slides(topic,num,uploader);
-                            else
-                                m.add_slides(topic,num,uploader);
+                            m.add_slides(topic,num,instructors.get(ID));
 
-                            System.out.println("Welcome "+uploader);
+                            System.out.println("Welcome "+instructors.get(ID).name);
                         }
                         else
                         {
+
                             cin.nextLine();
                             System.out.println("Enter Topic of Slide : ");
                             String topic=cin.nextLine();
                             System.out.println("Enter The file name");
                             String file=cin.nextLine();
-                            if(ID==0)
-                            m.add_video(I0,topic,file,uploader);
-                            else
-                                m.add_video(I1,topic,file,uploader);
+                            m.add_video(topic,file,instructors.get(ID));
 
-                            System.out.println("Welcome "+uploader);
+                            System.out.println("Welcome "+instructors.get(ID).name);
                         }
                     }
+
                     if(choice==2)
                     {
                         System.out.println("1.Add Assignment \n 2. Add Quiz");
@@ -488,10 +685,9 @@ public class Main {
                             String statement=cin.nextLine();
                             System.out.println("Enter the Max Marks : ");
                             int marks=cin.nextInt();
-                            if(ID==0)
-                            m.add_assignment(I0,statement,marks);
-                            else
-                                m.add_assignment(I1,statement,marks);
+                            m.add_assignment(statement,marks,instructors.get(ID));
+
+                            System.out.println("Welcome "+instructors.get(ID).name);
 
                         }
                         else
@@ -500,28 +696,26 @@ public class Main {
 
                             System.out.println("Enter the Quiz Question : ");
                             String ques=cin.nextLine();
-                            if(ID==0)
-                            m.add_quizzes(I0,ques);
-                            else
-                                m.add_quizzes(I1,ques);
+                            m.add_quizzes(ques,instructors.get(ID));
 
+                            System.out.println("Welcome "+instructors.get(ID).name);
                         }
                     }
                     if(choice==3)
                     {
-                        m.view_material();
+                        m.view_material(instructors.get(ID));
                     }
                     if(choice == 4)
                     {
-                        m.View_assessments();
+                        m.View_assessments(instructors.get(ID));
                     }
                     if(choice == 5)
                     {
-                       m.get_grades(s0,s1,s2);
+                       m.get_grades(instructors.get(ID));
                     }
                     if(choice == 6)
                     {
-                        // close the assessment
+                        m.close_assessment(instructors.get(ID));
                     }
                     if(choice ==7)
                     {
@@ -548,18 +742,7 @@ public class Main {
 
                     System.out.println("Students : \n 0-S0 \n 1-S1 \n 2-S2");
                     int ID=cin.nextInt();
-                    String stu="S2";
-                    student s=s2;
-                    if(ID==0)
-                    {
-                        stu="S0";
-                        s=s0;
-                    }
-                    if(ID==1)
-                    {
-                        stu="S1";
-                        s=s1;
-                    }
+
                 while(true)
                 {
                     System.out.println("STUDENTS MENU \n 1.view lecture materials \n 2.view assessments \n 3.submit assessments" +
@@ -567,32 +750,20 @@ public class Main {
                     int choice=cin.nextInt();
                     if(choice==1)
                     {
-                        m.student_view_material();
+                        m.student_view_material(students.get(ID));
                     }
                     if(choice == 2)
                     {
-                        m.student_View_assessments();
+                        m.student_View_assessments(students.get(ID));
                     }
                     if(choice == 3)
                     {
-                        m.pending_assessments(s);
-                        System.out.println("Enter ID of assignment :");
-                        int a=cin.nextInt();
-                        System.out.println("Enter the file name of assignment");
-                        String name=cin.nextLine();
-                        if(name.charAt(name.length()-1)=='p' && name.charAt(name.length()-2)=='i'
-                        && name.charAt(name.length()-3)=='z' && name.charAt(name.length()-4)=='.')
-                        {
-                            m.submit_assignment(s,a,-1,stu);
-                        }
-                        else
-                        {
-                            System.out.println("ERROR!!!!!! Wrong File name submitted");
-                        }
+                        m.submit_assignment(students.get(ID));
+
                     }
                     if(choice == 4)
                     {
-                        m.view_grades(s);
+                        m.view_grades(students.get(ID));
                     }
                     if(choice == 5)
                     {
@@ -618,61 +789,119 @@ public class Main {
     }
 
 
-    void add_slides(String topic,int slides,String uploader)
+
+
+
+
+
+
+    void add_slides(String topic,int slides,instructor uploader)
     {
 
         ArrayList<String> materials=new ArrayList<String>();
+
         for(int j=1;j<=slides;j++) {
-            System.out.println("Content in slide " + j);
+
+            System.out.println("Content in slide" + " " + j);
+
             String content = cin.nextLine();
+
             materials.add(content);
         }
+
             slides s=new slides(topic,materials,uploader);
-        lecture_slides.add(s);
-
-
+        material.add(s);
 
     }
-    void add_video(instructor i,String topic,String content,String uploader)
+
+
+
+
+
+    void add_video(String topic,String content,instructor uploader)
     {
+
         video v=new video(topic, content,uploader);
-        lecture_videos.add(v);
-    }
-    void add_assignment( instructor i,String statement,int marks)
-    {
-        Assignment assi=new Assignment(statement,marks,"False");
-        assignment.add(assi);
-    }
-    void add_quizzes( instructor i,String statement)
-    {
-        Quiz q=new Quiz(statement,1,"False");
-        quiz.add(q);
-    }
-    void view_material()
-    {
-        instructor i=new instructor();
-        i.get_array_lists(lecture_slides,lecture_videos);
-        i.view_materials();
-
-    }
-    void View_assessments() {
-        instructor i=new instructor();
-        i.get_assessment_lists(assignment,quiz);
-        i.view_assessments();
+        material.add(v);
     }
 
-    void student_view_material()
+
+
+
+
+
+    void add_assignment(String statement,int marks,instructor i)
     {
-        student s=new student();
-        s.get_array_lists(lecture_slides,lecture_videos);
-        s.view_materials();
+        Assignment assi=new Assignment(statement,marks,"Open",i);
+        assessments.add(assi);
     }
-    void student_View_assessments()
+
+
+
+
+
+    void add_quizzes(String statement, instructor i)
     {
-        student s=new student();
-        s.get_assessment_lists(assignment,quiz);
-        s.view_assessments();
+        Quiz q=new Quiz(statement,i);
+        assessments.add(q);
     }
+
+
+
+
+
+
+    void view_material(instructor I)
+    {
+        I.view_lm(material);
+    }
+
+    void View_assessments(instructor I)
+    {
+       I.view_assessments(assessments);
+    }
+
+
+    void get_grades(instructor I)
+    {
+            I.grade_assessments(assessments);
+    }
+
+    void close_assessment(instructor I)
+    {
+        I.close_assessments(assessments);
+    }
+
+
+
+
+
+    void student_view_material(student s)
+    {
+        s.view_lm(material);
+
+    }
+
+
+
+
+
+    void student_View_assessments(student s)
+    {
+        s.view_assessments(assessments);
+    }
+
+    void submit_assignment(student s)
+    {
+        s.submit_assessments(assessments);
+    }
+
+    void view_grades(student s)
+    {
+        s.view_grades(assessments);
+    }
+
+
 
 
     void add_comments(String s)
@@ -680,6 +909,12 @@ public class Main {
         comm=new COMMENTS(s);
         comments.add(comm);
     }
+
+
+
+
+
+
     void view_comments()
     {
         for(int i=0;i< comments.size();i++)
@@ -687,101 +922,5 @@ public class Main {
             System.out.println(comments.get(i));
         }
     }
-
-
-
-    void pending_assessments(student s)
-    {
-        ArrayList<Assignment> pending=s.getAssignment_student();
-        for(int i=0;i< pending.size();i++)
-        {
-            if(pending.get(i).getStatus()=="False")
-            {
-                System.out.println(i+" -> "+pending.get(i).getProblem_statement());
-            }
-        }
-        System.out.println("   Quiz  ");
-        ArrayList<Quiz> pending_q=s.getQuiz_student();
-        for(int i=0;i<pending_q.size();i++)
-        {
-            if(pending_q.get(i).getStatus()=="False")
-            {
-                System.out.println(i+" -> "+pending_q.get(i).getQuestion());
-            }
-        }
-
-
-    }
-    void submit_assignment(student s,int code_ass,int code_quiz,String name)
-    {
-        ArrayList<Assignment> pending=s.getAssignment_student();
-        for(int i=0;i< pending.size();i++)
-        {
-            if(i==code_ass)
-            {
-                pending.get(i).setStatus("True");
-                pending.get(i).setName(name);
-            }
-        }
-        s.setAssignment_student(pending);
-
-
-        ArrayList<Quiz> q_pending=s.getQuiz_student();
-        for(int i=0;i< q_pending.size();i++)
-        {
-            if(i==code_quiz)
-            {
-                q_pending.get(i).setStatus("True");
-                q_pending.get(i).setName(name);
-            }
-        }
-        s.setStudent_quiz(q_pending);
-    }
-
-    void view_grades(student s)
-    {
-        s.print_grades();
-    }
-
-    void get_grades(student s0,student s1,student s2)
-    {
-        instructor i=new instructor();
-        i.view_assessments();
-        System.out.println("Enter the ID of assignment to check the submission otherwise -1 ");
-        int AID=cin.nextInt();
-        System.out.println("Enter the ID of quiz to check the submission otherwise -1 ");
-        int QID=cin.nextInt();
-
-        if(AID==-1 && QID!=-1)
-        {
-            ArrayList<Quiz> q_pending=s0.getQuiz_student();
-            if(q_pending.get(QID).getGraded()!=-1)
-                System.out.println("0"+"->"+q_pending.get(QID).getStudent_name());
-
-            ArrayList<Quiz> r_pending=s1.getQuiz_student();
-            if(r_pending.get(QID).getGraded()!=-1)
-                System.out.println("1"+"->"+r_pending.get(QID).getStudent_name());
-
-            ArrayList<Quiz> s_pending=s2.getQuiz_student();
-            if(s_pending.get(QID).getGraded()!=-1)
-                System.out.println("2"+"->"+s_pending.get(QID).getStudent_name());
-
-        }
-        System.out.println("Choose ID from these Ungraded submissions");
-        int ID=cin.nextInt();
-        student s=s2;
-        if(ID==0)s=s0;
-        if(ID==1)s=s1;
-        System.out.println(s.assignment_student.get(0).getName());
-        System.out.println(s.assignment_student.get(0).getMarks());
-        System.out.println("Enter the marks");
-        int mark=cin.nextInt();
-        s.assignment_student.get(0).setMarks(mark);
-
-
-
-    }
-
-
 
 }
