@@ -475,6 +475,7 @@ class Quiz implements  assessment
 
 class student
 {
+    ArrayList<assessment> ass = new ArrayList<>();
     Scanner cin=new Scanner(System.in);
       String student_name;
       student(String name)
@@ -498,27 +499,9 @@ class student
         }
 
     }
-    void view_comments(ArrayList<COMMENTS> commments)
+
+    void submit_assessments()
     {
-
-    }
-    void add_comments(ArrayList<COMMENTS> commments)
-    {
-
-    }
-
-    void submit_assessments(ArrayList<assessment> assessment)
-    {
-
-        for(int i=0;i<assessment.size();i++)
-        {
-            if(assessment.get(i).getStatus().equals("Open") && assessment.get(i).Is_submitted()==false)
-            {
-                System.out.println(i+" ");
-                assessment.get(i).print_assessments();
-            }
-        }
-
         System.out.println("Enter The ID to submit : ");
         int code=cin.nextInt();
         cin.nextLine();
@@ -527,12 +510,12 @@ class student
         if(name.charAt(name.length()-1)=='p' && name.charAt(name.length()-2)=='i'
                 && name.charAt(name.length()-3)=='z' && name.charAt(name.length()-4)=='.')
         {
-            for(int i=0;i<assessment.size();i++)
+            for(int i=0;i<ass.size();i++)
             {
                 if(i==code)
                 {
-                    assessment.get(i).submissions.setFile_name(name);
-                    assessment.get(i).setIs_submitted(true);
+                    ass.get(i).submissions.setFile_name(name);
+                    ass.get(i).setIs_submitted(true);
                 }
             }
 
@@ -545,11 +528,11 @@ class student
 
     }
 
-    void view_grades(ArrayList<assessment> assessment)
+    void view_grades()
     {
-        for(int i=0;i<assessment.size();i++)
+        for(int i=0;i<ass.size();i++)
         {
-                assessment.get(i).submissions.view_grades();
+                ass.get(i).submissions.view_grades();
         }
 
     }
@@ -874,16 +857,11 @@ public class Main {
 
 
 
-
-
     void student_view_material(student s)
     {
         s.view_lm(material);
 
     }
-
-
-
 
 
     void student_View_assessments(student s)
@@ -893,12 +871,20 @@ public class Main {
 
     void submit_assignment(student s)
     {
-        s.submit_assessments(assessments);
+        for(int i=0;i<assessments.size();i++)
+        {
+            if(assessments.get(i).getStatus().equals("Open") && assessments.get(i).Is_submitted()==false)
+            {
+                System.out.println(i+" ");
+                assessments.get(i).print_assessments();
+            }
+        }
+        s.submit_assessments();
     }
 
     void view_grades(student s)
     {
-        s.view_grades(assessments);
+        s.view_grades();
     }
 
 
