@@ -8,13 +8,23 @@ interface comm
 
 class COMMENTS
 {
-    String s;
-    Date date;
+    private String s;
+    private Date date;
     COMMENTS(String comm)
     {
         this.s=comm;
         this.date=java.util.Calendar.getInstance().getTime();
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getS() {
+        return s;
+    }
+
+
 }
 
 
@@ -32,16 +42,19 @@ interface Viewing
 
 
 
-class instructor
+class instructor implements comm
 {
     Scanner cin=new Scanner(System.in);
-    String name;
+    private String name;
 
     instructor(String name)
     {
         this.name=name;
     }
 
+    public String getName() {
+        return name;
+    }
 
     void close_assessments(ArrayList<assessment> assessment)
     {
@@ -86,12 +99,15 @@ class instructor
         System.out.println("MAx marks are : " + ass.getMax_marks());
         System.out.println("Enter the marks :");
         int marks=cin.nextInt();
-
+        sub.setI(getName());
         sub.setMarks(marks);
         sub.setIs_graded(true);
     }
 
+    @Override
+    public void view_comments() {
 
+    }
 }
 
 
@@ -146,8 +162,9 @@ class slides implements materials
     {
         System.out.println("Slide topic is : "+this.topic);
         System.out.println("Slide content is : "+this.content);
-        System.out.println(this.date);
-        System.out.println(this.uploader.name);
+        System.out.println("DAte of upload is : "+this.date);
+        System.out.println("Uploaded by : "+ this.uploader.getName());
+        System.out.println();
 
     }
 }
@@ -193,10 +210,11 @@ class video implements materials
 
     @Override
     public void view() {
-        System.out.println(this.topic);
-        System.out.println(this.content);
-        System.out.println(this.date);
-        System.out.println(this.uploader.name);
+        System.out.println("Slide topic is : "+this.topic);
+        System.out.println("Slide content is : "+this.content);
+        System.out.println("DAte of upload is : "+this.date);
+        System.out.println("Uploaded by : "+ this.uploader.getName());
+        System.out.println();
 
     }
 }
@@ -212,10 +230,10 @@ class video implements materials
 class submission
 {
     private student s;
-    assessment assess;
-    String I;
-    int marks;
-    String file_name;
+    private assessment assess;
+    private String I;
+    private int marks;
+    private  String file_name;
     boolean is_graded=false;
 
 
@@ -229,6 +247,10 @@ class submission
 
     public String getI() {
         return I;
+    }
+
+    public void setI(String i) {
+        I = i;
     }
 
     public student getS() {
@@ -289,6 +311,8 @@ interface assessment
     public boolean Is_submitted();
     public void setIs_submitted( boolean is_submitted);
     public String getQues();
+    public instructor getI();
+
 }
 
 class Assignment implements assessment
@@ -357,7 +381,8 @@ class Assignment implements assessment
         System.out.println("Question : " + getQues());
         System.out.println("Marks are : " + getMax_marks());
         System.out.println("Status : "+ getStatus());
-        System.out.println("Uploaded by " + getI().name);
+        System.out.println("Uploaded by " + getI().getName());
+        System.out.println();
     }
 }
 
@@ -444,7 +469,8 @@ class Quiz implements  assessment
         System.out.println("Question : " + getQues());
         System.out.println("Marks are : " + getMax_marks());
         System.out.println("Status : "+ getStatus());
-        System.out.println("Uploaded by " + getI().name);
+        System.out.println("Uploaded by " + getI().getName());
+        System.out.println();
     }
 }
 
@@ -457,16 +483,20 @@ class Quiz implements  assessment
 
 
 
-class student
+class student implements comm
 {
     private HashMap<assessment, submission> hmap;
     Scanner cin=new Scanner(System.in);
-      String student_name;
+      private String student_name;
       student(String name)
       {
           this.student_name=name;
           hmap = new HashMap<>();
       }
+
+    public String getStudent_name() {
+        return student_name;
+    }
 
     public HashMap<assessment, submission> getHmap() {
         return hmap;
@@ -527,19 +557,28 @@ class student
                 ungraded.add(m.getKey());
         }
         System.out.println("Graded");
+        boolean flag=false;
         for(int i=0;i< graded.size();i++)
         {
             System.out.println(graded.get(i).getQues());
+            flag=true;
         }
+
+        if(flag) System.out.println("Graded by :" + graded.get(graded.size()-1).getI().getName());
+
+        System.out.println();
         System.out.println("Ungraded");
         for(int i=0;i< ungraded.size();i++)
         {
             System.out.println(ungraded.get(i).getQues());
         }
+        System.out.println();
     }
 
+    @Override
+    public void view_comments() {
 
-
+    }
 }
 
 public class Main {
@@ -625,7 +664,7 @@ public class Main {
                             int num= cin.nextInt();
                             m.add_slides(topic,num,instructors.get(ID));
 
-                            System.out.println("Welcome "+instructors.get(ID).name);
+                            System.out.println("Welcome "+instructors.get(ID).getName());
                         }
                         else
                         {
@@ -642,7 +681,7 @@ public class Main {
                             {
                                 System.out.println("Wrong file name Entered !!!!! ");
                             }
-                            System.out.println("Welcome "+instructors.get(ID).name);
+                            System.out.println("Welcome "+instructors.get(ID).getName());
                         }
                     }
 
@@ -660,7 +699,7 @@ public class Main {
                             int marks=cin.nextInt();
                             m.add_assignment(statement,marks,instructors.get(ID));
 
-                            System.out.println("Welcome "+instructors.get(ID).name);
+                            System.out.println("Welcome "+instructors.get(ID).getName());
 
                         }
                         else
@@ -671,18 +710,18 @@ public class Main {
                             String ques=cin.nextLine();
                             m.add_quizzes(ques,instructors.get(ID));
 
-                            System.out.println("Welcome "+instructors.get(ID).name);
+                            System.out.println("Welcome "+instructors.get(ID).getName());
                         }
                     }
                     if(choice==3)
                     {
                         m.view_material(instructors.get(ID));
-                        System.out.println("Welcome "+instructors.get(ID).name);
+                        System.out.println("Welcome "+instructors.get(ID).getName());
                     }
                     if(choice == 4)
                     {
                         m.View_assessments(instructors.get(ID));
-                        System.out.println("Welcome "+instructors.get(ID).name);
+                        System.out.println("Welcome "+instructors.get(ID).getName());
                     }
                     if(choice == 5)
                     {
@@ -702,19 +741,19 @@ public class Main {
                             if(students.get(i).getHmap().containsKey(assessments.get(code)))
                             {
                                 System.out.println(i+" -> ");
-                                System.out.println(students.get(i).student_name);
+                                System.out.println(students.get(i).getStudent_name());
                             }
                         }
                         System.out.println("Enter the ID of student to garde : ");
                         code = cin.nextInt();
                         student stu = students.get(code);
                        m.get_grades(instructors.get(ID), stu, ass);
-                        System.out.println("Welcome "+instructors.get(ID).name);
+                        System.out.println("Welcome "+instructors.get(ID).getName());
                     }
                     if(choice == 6)
                     {
                         m.close_assessment(instructors.get(ID));
-                        System.out.println("Welcome "+instructors.get(ID).name);
+                        System.out.println("Welcome "+instructors.get(ID).getName());
 
                     }
                     if(choice ==7)
@@ -728,7 +767,7 @@ public class Main {
                         System.out.println("Enter The comments : ");
                         String s=cin.nextLine();
                         m.add_comments(s);
-                        System.out.println("Welcome "+instructors.get(ID).name);
+                        System.out.println("Welcome "+instructors.get(ID).getName());
                     }
                     if(choice == 9)
                     {
@@ -753,23 +792,23 @@ public class Main {
                     if(choice==1)
                     {
                         m.student_view_material(students.get(ID));
-                        System.out.println("Welcome "+students.get(ID).student_name);
+                        System.out.println("Welcome "+students.get(ID).getStudent_name());
                     }
                     if(choice == 2)
                     {
                         m.student_View_assessments(students.get(ID));
-                        System.out.println("Welcome "+students.get(ID).student_name);
+                        System.out.println("Welcome "+students.get(ID).getStudent_name());
                     }
                     if(choice == 3)
                     {
                         m.submit_assignment(students.get(ID));
-                        System.out.println("Welcome "+students.get(ID).student_name);
+                        System.out.println("Welcome "+students.get(ID).getStudent_name());
 
                     }
                     if(choice == 4)
                     {
                         m.view_grades(students.get(ID));
-                        System.out.println("Welcome "+students.get(ID).student_name);
+                        System.out.println("Welcome "+students.get(ID).getStudent_name());
                     }
                     if(choice == 5)
                     {
@@ -781,7 +820,7 @@ public class Main {
                         System.out.println("Enter The comments : ");
                         String str=cin.nextLine();
                         m.add_comments(str);
-                        System.out.println("Welcome "+students.get(ID).student_name);
+                        System.out.println("Welcome "+students.get(ID).getStudent_name());
                     }
                     if(choice == 7)
                     {
@@ -941,8 +980,8 @@ public class Main {
     {
         for(int i=0;i< comments.size();i++)
         {
-            System.out.println(comments.get(i).s);
-            System.out.println(comments.get(i).date);
+            System.out.println(comments.get(i).getS());
+            System.out.println(comments.get(i).getDate());
         }
     }
 
