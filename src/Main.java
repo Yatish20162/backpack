@@ -50,6 +50,7 @@ class instructor
             System.out.println(i + " -> ");
             assessment.get(i).print_assessments();
         }
+
         System.out.println("choose the assessment to close : ");
         int code = cin.nextInt();
 
@@ -79,44 +80,19 @@ class instructor
         }
 
     }
-    void grade_assessments(ArrayList<assessment> assessment)
+    void grade_assessments(student stu, assessment ass)
     {
-        for(int i=0;i<assessment.size();i++)
-        {
-            System.out.println(i+" -> ");
-            assessment.get(i).print_assessments();
-        }
-        System.out.println("choose the assessment : ");
-        int code=cin.nextInt();
+        submission sub = stu.getHmap().get(ass);
+        System.out.println("MAx marks are : " + ass.getMax_marks());
+        System.out.println("Enter the marks :");
+        int marks=cin.nextInt();
 
-        for(int i=0;i<assessment.size();i++)
-        {
-            if(i==code)
-            {
-                System.out.println("Maximum marks is : "+ assessment.get(i).getMax_marks());
-                System.out.println("Enter The marks");
-                int marks=cin.nextInt();
-
-                assessment.get(i).submissions.is_graded=true;
-                assessment.get(i).submissions.grade(marks,name);
-            }
-        }
-
-
-
-
+        sub.setMarks(marks);
+        sub.setIs_graded(true);
     }
 
 
 }
-
-
-
-
-
-
-
-
 
 
 interface materials
@@ -168,8 +144,8 @@ class slides implements materials
     @Override
     public void view()
     {
-        System.out.println(this.topic);
-        System.out.println(this.content);
+        System.out.println("Slide topic is : "+this.topic);
+        System.out.println("Slide content is : "+this.content);
         System.out.println(this.date);
         System.out.println(this.uploader.name);
 
@@ -257,6 +233,14 @@ class submission
 
     public student getS() {
         return s;
+    }
+
+    public void setMarks(int marks) {
+        this.marks = marks;
+    }
+
+    public void setIs_graded(boolean is_graded) {
+        this.is_graded = is_graded;
     }
 
     public boolean isIs_graded() {
@@ -651,8 +635,13 @@ public class Main {
                             String topic=cin.nextLine();
                             System.out.println("Enter The file name");
                             String file=cin.nextLine();
+                            if(file.charAt(file.length()-1)=='4' && file.charAt(file.length()-2)=='p'
+                            && file.charAt(file.length()-3)=='m' && file.charAt(file.length()-4)=='.')
                             m.add_video(topic,file,instructors.get(ID));
-
+                            else
+                            {
+                                System.out.println("Wrong file name Entered !!!!! ");
+                            }
                             System.out.println("Welcome "+instructors.get(ID).name);
                         }
                     }
@@ -697,12 +686,35 @@ public class Main {
                     }
                     if(choice == 5)
                     {
-                       m.get_grades(instructors.get(ID));
+                        for(int i=0;i<assessments.size();i++)
+                        {
+                            if(assessments.get(i).getStatus().equals("Open"))
+                            {
+                                System.out.println(i+" -> ");
+                                assessments.get(i).print_assessments();
+                            }
+                        }
+                        System.out.println("choose the assessment : ");
+                        int code=cin.nextInt();
+                        assessment ass = assessments.get(code);
+                        for(int i=0; i< students.size(); i++)
+                        {
+                            if(students.get(i).getHmap().containsKey(assessments.get(code)))
+                            {
+                                System.out.println(i+" -> ");
+                                System.out.println(students.get(i).student_name);
+                            }
+                        }
+                        System.out.println("Enter the ID of student to garde : ");
+                        code = cin.nextInt();
+                        student stu = students.get(code);
+                       m.get_grades(instructors.get(ID), stu, ass);
                         System.out.println("Welcome "+instructors.get(ID).name);
                     }
                     if(choice == 6)
                     {
                         m.close_assessment(instructors.get(ID));
+                        System.out.println("Welcome "+instructors.get(ID).name);
 
                     }
                     if(choice ==7)
@@ -765,6 +777,7 @@ public class Main {
                     }
                     if(choice==6)
                     {
+                        cin.nextLine();
                         System.out.println("Enter The comments : ");
                         String str=cin.nextLine();
                         m.add_comments(str);
@@ -857,9 +870,9 @@ public class Main {
     }
 
 
-    void get_grades(instructor I)
+    void get_grades(instructor I, student stu, assessment ass)
     {
-            I.grade_assessments(assessments);
+            I.grade_assessments(stu, ass);
     }
 
     void close_assessment(instructor I)
@@ -883,20 +896,26 @@ public class Main {
 
     void submit_assignment(student s)
     {
+        int counter=0;
         for(int i=0;i<assessments.size();i++)
         {
             if(assessments.get(i).getStatus().equals("Open") && !s.getHmap().containsKey(assessments.get(i)))
             {
+                counter++;
                 System.out.println(i+" ");
                 assessments.get(i).print_assessments();
             }
+        }
+        if(counter==0)
+        {
+            System.out.println("NO Pending Assignment");
+            return;
         }
         System.out.println("Enter The ID to submit : ");
         int code=cin.nextInt();
         cin.nextLine();
         assessment ass = assessments.get(code);
         s.submit_assessments(ass,s);
-
     }
 
     void view_grades(student s)
